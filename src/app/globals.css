@@ -1,0 +1,70 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+/* Scrollbar gelap yang ramping */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 8px;
+  border: 2px solid #0f172a;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Penyesuaian Leaflet untuk tema gelap */
+.leaflet-container {
+  background: #0f172a;
+  font-family: inherit;
+}
+.leaflet-popup-content-wrapper {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+.leaflet-popup-content {
+  margin: 12px 14px;
+  line-height: 1.5;
+}
+.leaflet-popup-tip {
+  background: #1e293b;
+}
+.leaflet-control-layers,
+.leaflet-bar a {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+.leaflet-control-attribution {
+  background: rgb(15 23 42 / 0.8) !important;
+  color: #64748b !important;
+}
+.leaflet-control-attribution a {
+  color: #94a3b8 !important;
+}
+
+/* Marker lingkaran GIS */
+.gis-marker {
+  border-radius: 9999px;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  box-shadow: 0 0 0 3px rgb(0 0 0 / 0.35), 0 2px 8px rgb(0 0 0 / 0.5);
+}
