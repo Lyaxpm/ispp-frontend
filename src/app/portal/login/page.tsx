@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { UserRound, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCustomerAuth } from "@/components/customer-provider";
+import { useCustomerAuth, CustomerAuthProvider } from "@/components/customer-provider";
 import { ApiError } from "@/lib/customer-api";
 
-export default function CustomerLoginPage() {
+function CustomerLoginForm() {
   const router = useRouter();
   const { login, isAuthenticated, isLoading: authLoading } = useCustomerAuth();
   const [email, setEmail] = useState("");
@@ -119,5 +119,13 @@ export default function CustomerLoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function CustomerLoginPage() {
+  return (
+    <CustomerAuthProvider>
+      <CustomerLoginForm />
+    </CustomerAuthProvider>
   );
 }

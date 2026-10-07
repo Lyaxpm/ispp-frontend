@@ -23,7 +23,7 @@ import { useAuth } from "@/components/providers";
 import { roleLabels } from "@/lib/format";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/customers", label: "Pelanggan", icon: Users },
   { href: "/packages", label: "Paket", icon: Package },
   { href: "/billing", label: "Tagihan", icon: Receipt },
@@ -39,7 +39,7 @@ const navItems = [
 const adminNavItem = { href: "/users", label: "Pengguna", icon: ShieldCheck } as const;
 
 function isActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
+  if (href === "/dashboard") return pathname === "/dashboard";
   return pathname.startsWith(href);
 }
 

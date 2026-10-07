@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) router.replace("/");
+    if (!authLoading && isAuthenticated) router.replace("/dashboard");
   }, [authLoading, isAuthenticated, router]);
 
   async function handleSubmit(e: FormEvent) {
@@ -40,7 +40,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(email.trim(), password);
-      router.replace("/");
+      router.replace("/dashboard");
     } catch (err) {
       setError(
         err instanceof ApiError

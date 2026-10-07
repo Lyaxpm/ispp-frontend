@@ -18,7 +18,7 @@ const routeTitles: { prefix: string; title: string }[] = [
   { prefix: "/tickets", title: "Tiket" },
   { prefix: "/inventory", title: "Inventaris" },
   { prefix: "/settings", title: "Pengaturan" },
-  { prefix: "/", title: "Dashboard" },
+  { prefix: "/dashboard", title: "Dashboard" },
 ];
 
 function titleFor(pathname: string): string {
