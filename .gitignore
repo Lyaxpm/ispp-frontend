@@ -1,0 +1,14 @@
+node_modules/
+.pnp
+.pnp.js
+.next/
+out/
+*.tsbuildinfo
+.env
+.env*.local
+!.env.example
+*.log
+npm-debug.log*
+.DS_Store
+.vscode/
+.idea/
