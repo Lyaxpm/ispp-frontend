@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CustomerStatusBadge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -17,6 +18,9 @@ import {
   usePackages,
   useIsolateCustomer,
   useUnisolateCustomer,
+  usePortalAccount,
+  useCreatePortalAccount,
+  useResetPortalPassword,
   type CustomerFilters,
 } from "@/hooks/use-customers";
 import { useCustomerInvoices } from "@/hooks/use-invoices";
@@ -235,7 +239,7 @@ function CustomerDetailDialog({
                   label="Kecepatan"
                   value={
                     customer.subscription.package
-                      ? `${formatMbps(customer.subscription.package.downloadKbps)} / ${formatMbps(customer.subscription.package.uploadKbps)}`
+                      ? `${customer.subscription.package.downloadMbps} / ${customer.subscription.package.uploadMbps} Mbps`
                       : undefined
                   }
                 />
@@ -296,6 +300,9 @@ function CustomerDetailDialog({
             )}
           </section>
 
+          {/* Akun Portal */}
+          <PortalAccountSection customerId={customer.id} defaultEmail={customer.email} />
+
           {/* Aksi cepat */}
           <section className="flex flex-wrap gap-2 border-t border-slate-700/60 pt-4">
             {customer.status === "ISOLATED" ? (
@@ -336,5 +343,105 @@ function DetailItem({ label, value }: { label: string; value: string | null | un
       <dt className="text-xs text-slate-500">{label}</dt>
       <dd className="mt-0.5 text-slate-200">{value ?? "-"}</dd>
     </div>
+  );
+}
+
+function PortalAccountSection({
+  customerId,
+  defaultEmail,
+}: {
+  customerId: string;
+  defaultEmail?: string | null;
+}) {
+  const account = usePortalAccount(customerId);
+  const create = useCreatePortalAccount();
+  const reset = useResetPortalPassword();
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [showReset, setShowReset] = useState(false);
+
+  return (
+    <section>
+      <h3 className="mb-2 text-sm font-semibold text-slate-200">Akun Portal Pelanggan</h3>
+      <div className="rounded-lg border border-slate-700/60 bg-slate-900/50 p-4 text-sm">
+        {account.isLoading ? (
+          <Skeleton className="h-10 w-full" />
+        ) : account.data?.hasAccount ? (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-slate-200">{account.data.email}</p>
+                <p className="text-xs text-slate-500">
+                  Login terakhir: {account.data.lastLoginAt ? formatDate(account.data.lastLoginAt) : "belum pernah"}
+                </p>
+              </div>
+              <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/40">
+                Akun aktif
+              </span>
+            </div>
+            {showReset ? (
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  type="password"
+                  placeholder="Kata sandi baru (min 8 karakter)"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <Button
+                  loading={reset.isPending}
+                  onClick={() =>
+                    reset.mutate(
+                      { id: customerId, newPassword },
+                      { onSuccess: () => { setNewPassword(""); setShowReset(false); } }
+                    )
+                  }
+                >
+                  Simpan
+                </Button>
+                <Button variant="outline" onClick={() => setShowReset(false)}>
+                  Batal
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => setShowReset(true)}>
+                Reset Kata Sandi
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-500">
+              Pelanggan belum punya akun portal. Buatkan agar ia bisa login di Portal Pelanggan.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Input
+                type="email"
+                placeholder="email@contoh.id"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Input
+                type="password"
+                placeholder="Kata sandi (min 8 karakter)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button
+                loading={create.isPending}
+                onClick={() =>
+                  create.mutate(
+                    { id: customerId, email, password },
+                    { onSuccess: () => setPassword("") }
+                  )
+                }
+              >
+                Buat Akun
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

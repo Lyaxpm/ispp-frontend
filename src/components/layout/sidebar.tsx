@@ -8,8 +8,11 @@ import {
   LayoutDashboard,
   Map as MapIcon,
   Network,
+  Package,
   Receipt,
+  Server,
   Settings,
+  ShieldCheck,
   Ticket,
   Users,
   X,
@@ -22,8 +25,10 @@ import { roleLabels } from "@/lib/format";
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/customers", label: "Pelanggan", icon: Users },
+  { href: "/packages", label: "Paket", icon: Package },
   { href: "/billing", label: "Tagihan", icon: Receipt },
   { href: "/noc", label: "NOC & Jaringan", icon: Activity },
+  { href: "/perangkat", label: "Perangkat", icon: Server },
   { href: "/gis", label: "Peta GIS", icon: MapIcon },
   { href: "/olt", label: "OLT / FTTH", icon: Network },
   { href: "/tickets", label: "Tiket", icon: Ticket },
@@ -31,14 +36,46 @@ const navItems = [
   { href: "/settings", label: "Pengaturan", icon: Settings },
 ] as const;
 
+const adminNavItem = { href: "/users", label: "Pengguna", icon: ShieldCheck } as const;
+
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
   return pathname.startsWith(href);
 }
 
+function NavLink({
+  item,
+  pathname,
+  onClose,
+}: {
+  item: { href: string; label: string; icon: typeof Zap };
+  pathname: string;
+  onClose: () => void;
+}) {
+  const active = isActive(pathname, item.href);
+  const Icon = item.icon;
+  return (
+    <Link
+      href={item.href}
+      onClick={onClose}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+        active
+          ? "bg-brand-600/15 text-brand-300 ring-1 ring-inset ring-brand-500/40"
+          : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+      )}
+    >
+      <Icon className="h-5 w-5 shrink-0" aria-hidden />
+      {item.label}
+    </Link>
+  );
+}
+
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <>
@@ -79,27 +116,12 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {navItems.map((item) => {
-            const active = isActive(pathname, item.href);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-brand-600/15 text-brand-300 ring-1 ring-inset ring-brand-500/40"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-                )}
-              >
-                <Icon className="h-5 w-5 shrink-0" aria-hidden />
-                {item.label}
-              </Link>
-            );
-          })}
+          {navItems.map((item) => (
+            <NavLink key={item.href} item={item} pathname={pathname} onClose={onClose} />
+          ))}
+          {isAdmin && (
+            <NavLink item={adminNavItem} pathname={pathname} onClose={onClose} />
+          )}
         </nav>
 
         <div className="border-t border-slate-700/60 p-4">

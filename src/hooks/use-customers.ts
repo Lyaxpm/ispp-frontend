@@ -120,3 +120,47 @@ export function useRebootOnu() {
     onError: (err) => toastError(toast, err, "Gagal mengirim perintah reboot ONU."),
   });
 }
+
+export interface PortalAccountInfo {
+  hasAccount: boolean;
+  email?: string;
+  isActive?: boolean;
+  lastLoginAt?: string | null;
+}
+
+export function usePortalAccount(customerId: string | null) {
+  return useQuery<PortalAccountInfo>({
+    queryKey: ["customers", customerId, "portal-account"],
+    queryFn: () => api.get<PortalAccountInfo>(`/customers/${customerId}/account`),
+    enabled: !!customerId,
+    staleTime: 30_000,
+  });
+}
+
+export function useCreatePortalAccount() {
+  const qc = useQueryClient();
+  const toast = useToast();
+  return useMutation({
+    mutationFn: ({ id, email, password }: { id: string; email: string; password: string }) =>
+      api.post<PortalAccountInfo>(`/customers/${id}/account`, { email, password }),
+    onSuccess: (_d, { id }) => {
+      toast.success("Akun portal dibuat", "Pelanggan kini bisa login ke portal.");
+      qc.invalidateQueries({ queryKey: ["customers", id, "portal-account"] });
+    },
+    onError: (err) => toastError(toast, err, "Gagal membuat akun portal."),
+  });
+}
+
+export function useResetPortalPassword() {
+  const qc = useQueryClient();
+  const toast = useToast();
+  return useMutation({
+    mutationFn: ({ id, newPassword }: { id: string; newPassword: string }) =>
+      api.post(`/customers/${id}/account/reset-password`, { newPassword }),
+    onSuccess: (_d, { id }) => {
+      toast.success("Kata sandi direset", "Kata sandi akun portal berhasil diperbarui.");
+      qc.invalidateQueries({ queryKey: ["customers", id, "portal-account"] });
+    },
+    onError: (err) => toastError(toast, err, "Gagal mereset kata sandi."),
+  });
+}

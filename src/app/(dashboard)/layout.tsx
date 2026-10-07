@@ -8,6 +8,9 @@ import { useAuth } from "@/components/providers";
 
 const routeTitles: { prefix: string; title: string }[] = [
   { prefix: "/customers", title: "Pelanggan" },
+  { prefix: "/packages", title: "Paket Layanan" },
+  { prefix: "/perangkat", title: "Perangkat NAS / Router" },
+  { prefix: "/users", title: "Pengguna" },
   { prefix: "/billing", title: "Tagihan" },
   { prefix: "/noc", title: "NOC & Jaringan" },
   { prefix: "/gis", title: "Peta GIS" },

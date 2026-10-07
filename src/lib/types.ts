@@ -25,8 +25,8 @@ export interface Package {
   id: string;
   name: string;
   code: string;
-  downloadKbps: number;
-  uploadKbps: number;
+  downloadMbps: number;
+  uploadMbps: number;
   price: number;
   validityDays: number;
   serviceType: "PPPOE" | "STATIC_IP" | "DHCP";
@@ -239,4 +239,131 @@ export interface AuthUser {
 export interface LoginResponse {
   access_token: string;
   user: AuthUser;
+}
+
+/* ---------------- Paket (manajemen dashboard, kontrak /api/packages) -------- */
+
+export type ServiceType = "PPPOE" | "STATIC_IP" | "DHCP" | "HOTSPOT";
+export type BillingType = "PREPAID" | "POSTPAID";
+
+export interface ManagedPackage {
+  id: string;
+  name: string;
+  downloadMbps: number;
+  uploadMbps: number;
+  price: number;
+  validityDays: number | null;
+  fupGb: number | null;
+  serviceType: ServiceType;
+  billingType: BillingType;
+  installFee: number | null;
+  setupFee: number | null;
+  description: string | null;
+  mikrotikProfile: string | null;
+  radiusRateLimit: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PackageFormInput {
+  name: string;
+  downloadMbps: number;
+  uploadMbps: number;
+  price: number;
+  serviceType: ServiceType;
+  billingType: BillingType;
+  validityDays?: number;
+  fupGb?: number;
+  installFee?: number;
+  setupFee?: number;
+  description?: string;
+  mikrotikProfile?: string;
+  radiusRateLimit?: string;
+}
+
+/* ---------------- Pengguna sistem (ADMIN) ----------------------------------- */
+
+export type SystemRole = "ADMIN" | "NOC" | "CASHIER" | "TECHNICIAN" | "CS";
+
+export interface SystemUser {
+  id: string;
+  name: string;
+  email: string;
+  role: SystemRole;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/* ---------------- Perangkat NAS/Router -------------------------------------- */
+
+export interface NasRouter {
+  id: string;
+  name: string;
+  host: string;
+  apiPort: number | null;
+  username: string;
+  useTls: boolean;
+  type: string | null;
+  location: string | null;
+  status: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NasRouterFormInput {
+  name: string;
+  host: string;
+  apiPort?: number;
+  username: string;
+  /** Wajib saat tambah; opsional saat edit (kosong = tidak diubah). */
+  password?: string;
+  useTls?: boolean;
+  type?: string;
+  location?: string;
+}
+
+export interface NasConnectionTestResult {
+  ok: boolean;
+  latencyMs?: number;
+  error?: string;
+}
+
+/* ---------------- Auth pelanggan & portal ----------------------------------- */
+
+export interface CustomerAuthUser {
+  id: string;
+  customerNo: string;
+  name: string;
+  email: string | null;
+}
+
+export interface CustomerLoginResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  customer: CustomerAuthUser;
+}
+
+export interface PortalProfile {
+  id: string;
+  customerNo: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  address: string;
+  status: CustomerStatus;
+  dueDay: number;
+  balance: number;
+  subscription: {
+    packageName: string;
+    downloadMbps?: number | null;
+    uploadMbps?: number | null;
+    price?: number | null;
+    pppoeUsername: string | null;
+    status: CustomerStatus;
+    startDate?: string | null;
+    endDate?: string | null;
+  } | null;
 }
